@@ -19,6 +19,7 @@ use App\Models\District;
 use App\Models\Affiliation_product;
 use App\Models\Affiliation_partner;
 use App\Models\OrderProduct;
+use App\Models\OrderConfirmationHistory;
 
 
 class HomeController extends Controller
@@ -152,11 +153,13 @@ return $result;
    public function order_card_holder_by_tid($id){
 
       $result = \DB::select("SELECT order_card_holder.*, affiliation_product.privilege AS affiliation_product_privilege , aff_sub_discount_product.privilege AS aff_sub_discount_product_privilege  ,physical_card_no.card_no, card_registation.full_name FROM order_card_holder LEFT JOIN physical_card_no ON physical_card_no.registation_no = order_card_holder.card_holder LEFT JOIN card_registation ON card_registation.card_Id = order_card_holder.card_holder LEFT JOIN affiliation_product ON  CONCAT('p_id-',affiliation_product.id)  = order_card_holder.product_table_id LEFT JOIN aff_sub_discount_product ON  CONCAT('sub_p_id-',aff_sub_discount_product.id) = order_card_holder.product_table_id WHERE order_card_holder.id = $id ");
-
       return $result ;
 
    }
      
+   public function order_confirmation_history(Request $req){
+
+   }
 
 
 }
