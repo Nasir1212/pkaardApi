@@ -20,6 +20,8 @@ use App\Models\Affiliation_product;
 use App\Models\Affiliation_partner;
 use App\Models\OrderProduct;
 use App\Models\OrderConfirmationHistory;
+use App\Models\Order_card_holder;
+use App\Models\Card_holder_wallet;
 
 
 class HomeController extends Controller
@@ -158,6 +160,79 @@ return $result;
    }
      
    public function order_confirmation_history(Request $req){
+
+
+      if($req->input("charge") == null){
+
+
+
+       $insert =   OrderConfirmationHistory::insert([
+         'product_id'=>$req->input("product_id"), 
+         'customer_registation_no'=>$req->input("customer_registation_no"), 
+         'affiliation_partner_id'=>$req->input("affiliation_partner_id"), 
+         'payment'=>$req->input("payment"), 
+         'date'=> date("Y/m/d"), 
+
+       ]);
+
+       if(!$insert){
+         return json_encode(['condition'=>false,'message'=>'Order Confirmation History failed']);
+       }else{
+         $delete =   Order_card_holder::where(['id'=>$req->input("table_id")])->delete();
+         if($delete){
+            return  json_encode(['condition'=>true,'message'=>'Successfully  Submission']);
+         }else{
+            return  json_encode(['condition'=>false,'message'=>'Submission Failed']);
+
+         }
+
+       }
+
+
+       
+      }else{
+         $wallet =   Card_holder_wallet::where(['registation_no'=>$req->input("customer_registation_no")])->get(['wallet']);
+         if($wallet[0]['wallet'] >= $req->input("charge")){
+           $charge_fee=  Card_holder_wallet::where(['registation_no'=>$req->input("customer_registation_no")])->update([
+
+               'wallet'=>$wallet[0]['wallet'] - floatval($req->input("charge"))
+           ]);
+         }else{
+            return json_encode(['condition'=>false,"message"=>"Your Customer Pkaard's blance is insufficient. "]);
+
+         }
+
+         $insert =   OrderConfirmationHistory::insert([
+            'product_id'=>$req->input("product_id"), 
+            'customer_registation_no'=>$req->input("customer_registation_no"), 
+            'affiliation_partner_id'=>$req->input("affiliation_partner_id"), 
+            'payment'=>$req->input("payment"), 
+            'date'=>date("Y/m/d"), 
+   
+          ]);
+
+          if(!$insert){
+            return  json_encode(['condition'=>false,'message'=>'Order Confirmation History failed']);
+          }else{
+            $delete =   Order_card_holder::where(['id'=>$req->input("table_id")])->delete();
+            if($delete){
+               return json_encode(['condition'=>true,'message'=>'Successfully  Submission']);
+            }else{
+               return  json_encode(['condition'=>false,'message'=>'Submission Failed']);
+   
+            }
+   
+          }
+
+
+      }
+
+      // table_id:id,
+      // product_id:product_table_id,
+      // customer_registation_no:card_holder,
+      // affiliation_partner_id:affiliation_id,
+      // payment:payable_price == null ? myPayablePrice:payable_price ,
+      // charge:payable_price == null ? grandTotal:null ,
 
    }
 

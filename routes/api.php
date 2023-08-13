@@ -43,6 +43,7 @@ Route::get('getAllOrder','getAllOrder');
 Route::get('getOneOrder/{id}','getOneOrder');
 Route::get('order_card_holder/{id}','order_card_holder');
 Route::get('order_card_holder_by_tid/{id}','order_card_holder_by_tid');
+Route::post('order_confirmation_history','order_confirmation_history');
 
 
 });
