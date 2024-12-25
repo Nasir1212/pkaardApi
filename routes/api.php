@@ -46,6 +46,12 @@ Route::get('order_card_holder_by_tid/{id}','order_card_holder_by_tid');
 Route::post('order_confirmation_history','order_confirmation_history');
 
 
+Route::get('/clear-cache', function() {
+    $exitCode = Artisan::call('cache:clear');
+    $exitCode = Artisan::call('config:cache');
+    return 'DONE'; //Return anything
+});
+
 });
 
 
